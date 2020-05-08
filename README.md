@@ -36,7 +36,7 @@ Make sure to do proper validation of the requests, and grant proper permissions 
 - ### Collaborator feature (100 points)
 
 ## Deadline
-You'll have a week to complete this task. Hence, the deadline of this task is 14th May, 2020.
+You'll have a week to complete this task. Hence, the deadline of this task is 15th May, 2020.
 
 ## Submission
 * Follow the instructions to setup and run this project.
