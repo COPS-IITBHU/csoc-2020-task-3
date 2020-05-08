@@ -27,7 +27,7 @@ You'll have to complete two subtasks:
 
   In this subtask, you will have to implement a feature where the creator of a todo can add or remove the collaborators to a todo. Specifically, for every todo, the owner can add one or more collaborator to a todo and can remove one or more collaborators from a todo. So, every todo will have a set of collaborators (may be empty too). The collaborator of a todo will have the access to Edit or Delete the todo, but he won't be able to add or delete the collaborators to the todo. Only the creator of the todo will have the permission to add or remove collaborators.
   
-  For this subtask, you may need to fiddle around with the models, create some views and serializers and make the necessary endpoints. We suggest you to create the two endpoints for adding and removing collaborators respectively, `/todo/{id}/add-collaborators/` and `/todo/{id}/remove-collaborators/`. Also, you will need to modify the GET Todo endpoint to display all the Todo - the one which the user has created, and the one for which the user is collaborating. Make sure to distinguish between the two of them, and we leave your imagination on how to do this.
+  For this subtask, you may need to fiddle around with the models, create some views and serializers and make the necessary endpoints. We suggest you to create the two endpoints `/todo/{id}/add-collaborators/` and `/todo/{id}/remove-collaborators/` for adding and removing collaborators, respectively. Also, you will need to modify the GET Todo endpoint to display all the Todo - the one which the user has created, and the one for which the user is collaborating. Make sure to distinguish between the two of them, and we leave your imagination on how to do this.
   
 Make sure to do proper validation of the requests, and grant proper permissions to a user.
 
@@ -210,16 +210,9 @@ In order to obtain a valid token it's necessary to send a request  `POST /auth/l
   
 	Response Code: `204`
 
-All the requests must be prefixed with the base URL of the API.
-Example: for login the `POST` request must be sent to `https://todo-app-csoc.herokuapp.com/auth/login/` with the required details. **Make sure to append a slash at the end, otherwise you may encounter an error while making the `POST` request.**
-
-### Documentation
-Swagger generated docs: [https://todo-app-csoc.herokuapp.com/](https://todo-app-csoc.herokuapp.com/)  
-ReDoc generated docs: [https://todo-app-csoc.herokuapp.com/redoc/](https://todo-app-csoc.herokuapp.com/redoc/)
-
 ### Testing the API
 
-The API can be tested by going to the deployed URL: [https://todo-app-csoc.herokuapp.com/](https://todo-app-csoc.herokuapp.com/), clicking the "Try it out" button after selecting the endpoint and finally executing it along with the Response Body (if required).
+The API can be tested by running the Django server locally, going to the following url: [http://127.0.0.1:8000/](http://127.0.0.1:8000/), clicking the "Try it out" button after selecting the endpoint and finally executing it along with the Response Body (if required).
 
 For testing the endpoints which require **Token** in the Authorization header, you can click on the "Authorize" button, write the Authorization token as  `Token <token>` (which you have obtained from the `auth/login/` endpoint) and finally click on "Authorize". Thereafter, all the requests made to any endpoint will have the Token in the Authorization Header.
 
