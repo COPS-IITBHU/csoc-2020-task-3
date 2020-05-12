@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Todo
+from collections import OrderedDict
 
 
 """
@@ -23,7 +24,43 @@ class TodoCreateSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         title = data['title']
         todo = Todo.objects.create(creator=user, title=title)
+        data['id']= todo.id
     
     class Meta:
         model = Todo
         fields = ('id', 'title',)
+
+
+class TodoGetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Todo
+        fields = ('id', 'title',)
+        ordering = '-id'
+
+class TodoDetailSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Todo
+        fields = ('id', 'title',)
+    
+    def put(self, title):
+        data = self.data
+        data['title'] = title
+        todo = Todo.objects.filter(creator = self.context['request'].user, id= data['id']).first()
+        todo.title = title
+        todo.save()
+        return data
+
+    def patch(self, title):
+        data = self.data
+        data['title'] = title
+        todo = Todo.objects.filter(creator = self.context['request'].user, id= data['id']).first()
+        todo.title = title
+        todo.save()
+        return data
+
+    def delete(self):
+        data = self.data
+        todo = Todo.objects.filter(creator = self.context['request'].user, id= data['id']).first()
+        print("\n\n\n\n", todo.id , todo.title)
+        todo.delete()
