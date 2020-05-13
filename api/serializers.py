@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from .models import Todo, contributor
+from .models import *
+from django.contrib.auth import get_user_model
 
+UserModel = get_user_model()
 
 """
 TODO:
@@ -33,5 +35,11 @@ class TodoSerializer(serializers.ModelSerializer):
 
 
 class TodoContri(serializers.ModelSerializer):
+    username = serializers.CharField(source="user.username")
+
     class Meta:
         model = contributor
+        fields = ('username', 'todo')
+        extra_kwargs = {
+            'todo': {'required': False, 'read_only': True}
+        }
