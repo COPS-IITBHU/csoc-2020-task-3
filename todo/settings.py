@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'fj1s9uin3@7mdn3*jh3+avzm)u8w0rc!k*i8+q+*g59#)xz*_*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = int(os.environ.get('DEBUG','1'))
+DEBUG = int(os.environ.get('DEBUG', '1'))
 
 if not DEBUG:
     SECRET_KEY = config('SECRET_KEY')
@@ -133,13 +133,13 @@ USE_L10N = True
 USE_TZ = True
 
 SWAGGER_SETTINGS = {
-   'SECURITY_DEFINITIONS': {
-      'Token': {
+    'SECURITY_DEFINITIONS': {
+        'Token': {
             'type': 'apiKey',
             'name': 'Authorization',
             'in': 'header'
-      }
-   }
+        }
+    }
 }
 
 

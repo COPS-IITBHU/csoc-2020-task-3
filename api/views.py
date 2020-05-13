@@ -3,6 +3,7 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from .serializers import TodoCreateSerializer
+from .serializers import TodoListViewSerializer
 from .models import Todo
 
 
@@ -13,23 +14,25 @@ Todo GET (List and Detail), PUT, PATCH and DELETE.
 """
 
 
-class TodoCreateView(generics.GenericAPIView):
-    """
-    TODO:
-    Currently, the /todo/create/ endpoint returns only 200 status code,
-    after successful Todo creation.
+class TodoListView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,
+                          )
+    serializer_class = TodoListViewSerializer
 
-    Modify the below code (if required), so that this endpoint would
-    also return the serialized Todo data (id etc.), alongwith 200 status code.
-    """
+    def get(self, request):
+        queryset = Todo.objects.filter(creator=request.user)
+        response = self.get_serializer(queryset, many=True)
+        return Response(response.data, status.HTTP_200_OK)
+
+
+class TodoCreateView(generics.GenericAPIView):
+
     permission_classes = (permissions.IsAuthenticated, )
     serializer_class = TodoCreateSerializer
 
     def post(self, request):
-        """
-        Creates a Todo entry for the logged in user.
-        """
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(status=status.HTTP_200_OK)
+        return Response(serializer.data, status.HTTP_200_OK)
