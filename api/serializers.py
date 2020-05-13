@@ -3,48 +3,53 @@ from .models import Todo
 from collections import OrderedDict
 from django.contrib.auth.models import User
 
-"""
-TODO:
-Create the appropriate Serializer class(es) for implementing
-Todo GET (List and Detail), PUT, PATCH and DELETE.
-"""
 class UsernameSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username',)
 
 class TodoCreateSerializer(serializers.ModelSerializer):
-    """
-    TODO:
-    Currently, the /todo/create/ endpoint returns only 200 status code,
-    after successful Todo creation.
+    collaborators = serializers.CharField(required = False, help_text = "Enter usernames separated by comma. Leave empty if no collaborators")
 
-    Modify the below code (if required), so that this endpoint would
-    also return the serialized Todo data (id etc.), alongwith 200 status code.
-    """
-    def save(self, **kwargs):
+    def save(self, colab):
         data = self.validated_data
         user = self.context['request'].user
         title = data['title']
-        todo = Todo.objects.create(creator=user, title=title)
+        # Create the todo
+        todo = Todo.objects.create(creator = user, title = title)
         data['id']= todo.id
+        # List for appending the usernames of Collaborators
+        data['collaborators'] = []
+        # Iterate through all usernames and add the collaborators
+        for x in colab['username'].split(','):
+            y = User.objects.filter(username = x)
+            # If no such user is found, discard it
+            # Else append the username to the list and add the collaborator
+            if y.count() != 0:
+                data['collaborators'].append({'username': x})
+                todo.collaborator.add(y.first())
     
+
     class Meta:
         model = Todo
-        fields = ('id', 'title',)
+        fields = ('id', 'title','collaborators')
 
 
 class TodoGetSerializer(serializers.ModelSerializer):
+    # We only need to show usernames of the users
     creator = UsernameSerializer(read_only = True)
     collaborator = UsernameSerializer(read_only=True, many=True)
+
     class Meta:
         model = Todo
         fields = ('id', 'title', 'creator', 'collaborator')
         ordering = '-id'
 
 class TodoDetailSerializer(serializers.ModelSerializer):
+    # We only need to show usernames of the users
     creator = UsernameSerializer(read_only = True)
     collaborator = UsernameSerializer(read_only=True, many=True)
+
     class Meta:
         model = Todo
         fields = ('id', 'title', 'creator','collaborator')
@@ -52,42 +57,49 @@ class TodoDetailSerializer(serializers.ModelSerializer):
     def put(self, title):
         data = self.data
         data['title'] = title
-        todo = Todo.objects.filter(creator = self.context['request'].user, id= data['id']).first()
+        # Get the todo 
+        todo = Todo.objects.get(id= data['id'])
         todo.title = title
         todo.save()
         return data
 
     def patch(self, title):
         data = self.data
+        # Update the title in serializer data
         data['title'] = title
-        todo = Todo.objects.filter(creator = self.context['request'].user, id= data['id']).first()
+        # Update the title in the model object
+        todo = Todo.objects.get(id= data['id'])
         todo.title = title
         todo.save()
+        # Return the data
         return data
 
     def delete(self):
         data = self.data
-        todo = Todo.objects.filter(creator = self.context['request'].user, id= data['id']).first()
-        print("\n\n\n\n", todo.id , todo.title)
+        todo = Todo.objects.get(id= data['id'])
         todo.delete()
 
 class CollaboratorSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=255, min_length= 1)  
+    usernames = serializers.CharField(max_length=255, min_length= 1, help_text = "Enter usernames separated by comma")  
     class Meta:
-        fields = ('username')
+        fields = ('usernames')
 
-    def do(self, id):
-        print('\n\n\n\n----------USERNAME-----------', self.data['username'])
-        todo = Todo.objects.filter(id= id).first()
-        print("\n\t\t", todo)
-        
-        todo.collaborator.remove(User.objects.filter(username = self.data['username']).first())
-        print('\n\n\nDone\n\n\n')
+    def remover(self, id):
+        colab = self.data['usernames'].split(',')
+        todo = Todo.objects.get(id= id)
+        # List for adding the collaborators
+        for x in colab:
+            y = User.objects.filter(username = x)
+            # If no such user is found, discard it
+            if y.count() != 0:
+                todo.collaborator.remove(y.first())
 
     def adder(self, id):
-        print('\n\n\n\n----------USERNAME-----------', self.data['username'])
-        todo = Todo.objects.filter(id= id).first()
-        print("\n\t\t", todo, '\t',User.objects.filter(username = self.data['username']).first())
-        
-        todo.collaborator.add(User.objects.filter(username = self.data['username']).first())
-        print('\n\n\nDone\n\n\n')
+        todo = Todo.objects.get(id= id)
+        colab = self.data['usernames'].split(',')
+        # List for adding the collaborators
+        for x in colab:
+            y = User.objects.filter(username = x)
+            # If no such user is found, discard it
+            if y.count() != 0:
+                todo.collaborator.add(y.first())

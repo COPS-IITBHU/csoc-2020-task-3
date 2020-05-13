@@ -8,22 +8,20 @@ class TokenSerializer(serializers.Serializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    # TODO: Implement login functionality
-    username = serializers.CharField(min_length=1)
-    password = serializers.CharField(min_length=1)
-
+    # Fields for serializer
+    username = serializers.CharField(min_length = 1)
+    password = serializers.CharField(min_length = 1)
+    
+    # Function to check authentication for credentials
     def authenticator(self):
-        data = self.data
-        user = authenticate(username= data['username'], password= data['password'])
+        user = authenticate(username = self.data['username'], password = self.data['password'])
         if user is not None:
             return user
         else:
-            return False
-       
-
+            return None
 
 class RegisterSerializer(serializers.Serializer):
-    # TODO: Implement register functionality
+    # Fields for Serializer
     first_name = serializers.CharField(max_length = 20, min_length = 1)
     last_name = serializers.CharField(max_length = 20, min_length = 1)
     email = serializers.EmailField(max_length=254)
@@ -32,27 +30,27 @@ class RegisterSerializer(serializers.Serializer):
 
     class Meta:
         fields = ('first_name', 'last_name' , 'email', 'username','password')
-    def do(self):
+
+    def register(self):
         username = self.data['username']
-        password = self.data['password']
         first_name = self.data['first_name']
         last_name = self.data['last_name']
-        email = self.data['email']
+        # Create user
         user = User.objects.create(username = username, first_name = first_name, last_name = last_name)
-        user.email = email
-        user.set_password(password)
+        user.email = self.data['email']
+        user.set_password(self.data['password'])
         user.save()
+        # Return the user for token generation
         return user
 
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # TODO: Implement the functionality to display user details
+    # Fields for serializer
     id = serializers.IntegerField()
-    name = serializers.CharField(source='get_full_name')
-    email = serializers.EmailField(max_length=254)
-    username = serializers.CharField(max_length=150, min_length= 1)
-
+    name = serializers.CharField(source = 'get_full_name')
+    email = serializers.EmailField(max_length = 254)
+    username = serializers.CharField(max_length = 150, min_length = 1)
 
     class Meta:
         model = User

@@ -16,60 +16,66 @@ def create_auth_token(user):
 
 
 class LoginView(generics.GenericAPIView):
-    """
-    TODO:
-    Implement login functionality, taking username and password
-    as input, and returning the Token.
-    """
-    
     serializer_class = LoginSerializer
     
     def post(self, request):
-        data = request.data
-        serializer = self.get_serializer(data)
-        answer = serializer.authenticator()
-        if (answer is not False):
-            token = create_auth_token(answer)
+        # If user is already authenticated, return 403-Forbidden
+        if request.user.is_authenticated:
+           return Response(status.HTTP_403_FORBIDDEN)
+
+        # deserialize the data from the POST request
+        serializer = self.get_serializer(request.data)
+        serializer.run_validation()
+        # Run the authenticator function and store its return value
+        auth_value = serializer.authenticator()
+        # If authentication is successful, auth_value = User
+        if (auth_value is not None):
+            # Create a token for the user
+            token = create_auth_token(auth_value)
             token = {'token':token}
-            serializer=  TokenSerializer(token)
+            # Serialise the token
+            serializer = TokenSerializer(token)
+            # Return the Token with status 200
             return Response(serializer.data ,status=status.HTTP_200_OK)
+        
+        # If authentication is unsuccessful, auth_value = None
         else:
+            # Return with 401 status
             now = {
                 "non_field_errors": ["Invalid credentials or the user does not exist!"]
             }
-            return Response(now ,status = status.HTTP_200_OK)
-        pass
-
-
+            return Response(now, status = status.HTTP_400_BAD_REQUEST)
 
 class RegisterView(generics.GenericAPIView):
-    """
-    TODO:
-    Implement register functionality, registering the user by
-    taking his details, and returning the Token.
-    """
     serializer_class = RegisterSerializer
 
+    
     def post(self, request):
-        data = request.data
-        serializer = self.get_serializer(data)
-        answer = serializer.do()
-        token = create_auth_token(answer)
-        token = {'token':token}
-        serializer=  TokenSerializer(token)
-        return Response(serializer.data ,status=status.HTTP_200_OK)
+        # If user is already authenticated, return 403-Forbidden
+        if request.user.is_authenticated:
+            return Response(status.HTTP_403_FORBIDDEN)
 
+        # deserialize the request data
+        serializer = self.get_serializer(request.data)
+        # Register the user
+        serializer.run_validation()
+        # Register the user
+        newUser = serializer.register()
+        # Create token
+        token = create_auth_token(newUser)
+        token = {'token':token}
+        # Return token with status 200
+        serializer = TokenSerializer(token)
+        return Response(serializer.data, status = status.HTTP_200_OK)
 
 class UserProfileView(generics.RetrieveAPIView):
-    """
-    TODO:
-    Implement the functionality to retrieve the details
-    of the logged in user.
-    """
     permission_classes = (permissions.IsAuthenticated, )
     serializer_class = UserSerializer
 
     def get(self, request):
-        user = User.objects.filter(username = request.user).first()
+        # Get the user
+        user = User.objects.get(username = request.user)
+        # Serialize the data
         serializer = self.get_serializer(user)
+        # Return response with status 200 and data
         return Response(serializer.data, status=status.HTTP_200_OK)
