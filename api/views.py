@@ -43,8 +43,11 @@ class TodoGetView(generics.GenericAPIView):
         user = request.user
         data = Todo.objects.all().filter(creator=user)
         serializer = self.get_serializer(data, many=True)
-        print("\n\n\nDATA:::   ", serializer.data)
-        return Response(serializer.data,status=status.HTTP_200_OK)
+        colab = data = Todo.objects.all().filter(collaborator=user)
+        serializer2 = self.get_serializer(colab, many=True)
+        l = [serializer.data, serializer2.data]
+        print("\n\n\nDATA:::   ", l)
+        return Response(l,status=status.HTTP_200_OK)
 
 class TodoDetailView(generics.GenericAPIView):
     
@@ -54,12 +57,15 @@ class TodoDetailView(generics.GenericAPIView):
     def get(self, request, id):
         print('\n\n\n\n', id)
         todo = Todo.objects.filter(creator = request.user, id= id).first()
+        if (todo is None):
+            todo = Todo.objects.filter(collaborator = request.user, id= id).first()
         print('\n\n\n\n', todo)
         serializer = self.get_serializer(todo)
         return Response(serializer.data,status=status.HTTP_200_OK, headers=None)
 
 
     def put(self, request, id):
+        # ONLY CREATOR CAN DO THIS
         todo = Todo.objects.filter(creator = request.user, id= id).first()
         serializer = self.get_serializer(todo)
         s= serializer.put(request.data['title'])
@@ -67,13 +73,49 @@ class TodoDetailView(generics.GenericAPIView):
         
     def patch(self, request, id):
         todo = Todo.objects.filter(creator = request.user, id= id).first()
+        if (todo is None):
+            todo = Todo.objects.filter(collaborator = request.user, id= id).first()
+        print('\n\n\n\n', todo)
         serializer = self.get_serializer(todo)
         s = serializer.put(request.data['title'])
         return Response( s,status=status.HTTP_200_OK, headers=None)
 
     def delete(self, request, id):
         todo = Todo.objects.filter(creator = request.user, id= id).first()
+        if (todo is None):
+            todo = Todo.objects.filter(collaborator = request.user, id= id).first()
+        print('\n\n\n\n', todo)
         serializer = self.get_serializer(todo)
         serializer.delete()
         print('\n\n\n--------------DELETED -----------------')
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class TodoRemoveCollaboratorView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated, )
+    serializer_class = CollaboratorSerializer
+    def patch(self, request, id):
+        # ONLY FOR CREATORS
+        print('\n\n\n\nID:::   ', id)
+        todo = Todo.objects.filter(creator = request.user, id= id).first()
+        print('\n\n\n\n', todo, type(id))
+        data = request.data
+        s = self.get_serializer(data)
+        s.do(id)
+        print('\n\n\n\n', data)
+        return Response(status = status.HTTP_200_OK)
+
+
+class TodoAddCollaboratorView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated, )
+    serializer_class = CollaboratorSerializer
+    def post(self, request, id):
+        # ONLY FOR CREATORS
+        print('\n\n\n\nID:::   ', id)
+        todo = Todo.objects.filter(creator = request.user, id= id).first()
+        print('\n\n\n\n', todo, type(id))
+        data = request.data
+        s = self.get_serializer(data)
+        s.adder(id)
+        print('\n\n\n\n', data)
+        return Response(status = status.HTTP_200_OK)
+    

@@ -37,7 +37,9 @@ class RegisterSerializer(serializers.Serializer):
         password = self.data['password']
         first_name = self.data['first_name']
         last_name = self.data['last_name']
+        email = self.data['email']
         user = User.objects.create(username = username, first_name = first_name, last_name = last_name)
+        user.email = email
         user.set_password(password)
         user.save()
         return user
@@ -47,12 +49,11 @@ class RegisterSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     # TODO: Implement the functionality to display user details
     id = serializers.IntegerField()
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
+    name = serializers.CharField(source='get_full_name')
     email = serializers.EmailField(max_length=254)
     username = serializers.CharField(max_length=150, min_length= 1)
 
 
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name' , 'email', 'username')
+        fields = ('id', 'name', 'email', 'username')

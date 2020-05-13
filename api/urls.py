@@ -11,5 +11,7 @@ urlpatterns = [
     path('todo/create/', TodoCreateView.as_view()),
     path('todo/', TodoGetView.as_view()),
     path('todo/<int:id>', TodoDetailView.as_view()),
+    path('todo/<int:id>/add-collaborators', TodoAddCollaboratorView.as_view()),
+    path('todo/<int:id>/remove-collaborators', TodoRemoveCollaboratorView.as_view()),
 ]
 

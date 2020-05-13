@@ -1,14 +1,17 @@
 from rest_framework import serializers
 from .models import Todo
 from collections import OrderedDict
-
+from django.contrib.auth.models import User
 
 """
 TODO:
 Create the appropriate Serializer class(es) for implementing
 Todo GET (List and Detail), PUT, PATCH and DELETE.
 """
-
+class UsernameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username',)
 
 class TodoCreateSerializer(serializers.ModelSerializer):
     """
@@ -32,16 +35,19 @@ class TodoCreateSerializer(serializers.ModelSerializer):
 
 
 class TodoGetSerializer(serializers.ModelSerializer):
+    creator = UsernameSerializer(read_only = True)
+    collaborator = UsernameSerializer(read_only=True, many=True)
     class Meta:
         model = Todo
-        fields = ('id', 'title',)
+        fields = ('id', 'title', 'creator', 'collaborator')
         ordering = '-id'
 
 class TodoDetailSerializer(serializers.ModelSerializer):
-    
+    creator = UsernameSerializer(read_only = True)
+    collaborator = UsernameSerializer(read_only=True, many=True)
     class Meta:
         model = Todo
-        fields = ('id', 'title',)
+        fields = ('id', 'title', 'creator','collaborator')
     
     def put(self, title):
         data = self.data
@@ -64,3 +70,24 @@ class TodoDetailSerializer(serializers.ModelSerializer):
         todo = Todo.objects.filter(creator = self.context['request'].user, id= data['id']).first()
         print("\n\n\n\n", todo.id , todo.title)
         todo.delete()
+
+class CollaboratorSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=255, min_length= 1)  
+    class Meta:
+        fields = ('username')
+
+    def do(self, id):
+        print('\n\n\n\n----------USERNAME-----------', self.data['username'])
+        todo = Todo.objects.filter(id= id).first()
+        print("\n\t\t", todo)
+        
+        todo.collaborator.remove(User.objects.filter(username = self.data['username']).first())
+        print('\n\n\nDone\n\n\n')
+
+    def adder(self, id):
+        print('\n\n\n\n----------USERNAME-----------', self.data['username'])
+        todo = Todo.objects.filter(id= id).first()
+        print("\n\t\t", todo, '\t',User.objects.filter(username = self.data['username']).first())
+        
+        todo.collaborator.add(User.objects.filter(username = self.data['username']).first())
+        print('\n\n\nDone\n\n\n')
