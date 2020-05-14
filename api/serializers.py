@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Todo
-
+ 
 
 """
 TODO:
@@ -17,13 +17,27 @@ class TodoCreateSerializer(serializers.ModelSerializer):
 
     Modify the below code (if required), so that this endpoint would
     also return the serialized Todo data (id etc.), alongwith 200 status code.
-    """
+    """ 
     def save(self, **kwargs):
         data = self.validated_data
         user = self.context['request'].user
         title = data['title']
         todo = Todo.objects.create(creator=user, title=title)
+        return todo
     
     class Meta:
         model = Todo
         fields = ('id', 'title',)
+   
+
+class TaskListSerializer(serializers.ModelSerializer):
+
+    class Meta :
+        model = Todo
+        fields = '__all__'   
+
+class TaskSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Todo
+        fields = ('id','title')
