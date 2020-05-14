@@ -22,10 +22,8 @@ class LoginView(generics.GenericAPIView):
         # If user is already authenticated, return 403-Forbidden
         if request.user.is_authenticated:
            return Response(status.HTTP_403_FORBIDDEN)
-
         # deserialize the data from the POST request
         serializer = self.get_serializer(request.data)
-        serializer.run_validation()
         # Run the authenticator function and store its return value
         auth_value = serializer.authenticator()
         # If authentication is successful, auth_value = User
@@ -58,7 +56,7 @@ class RegisterView(generics.GenericAPIView):
         # deserialize the request data
         serializer = self.get_serializer(request.data)
         # Register the user
-        serializer.run_validation()
+        #serializer.run_validation()
         # Register the user
         newUser = serializer.register()
         # Create token

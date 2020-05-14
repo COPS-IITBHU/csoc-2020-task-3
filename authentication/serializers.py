@@ -11,7 +11,9 @@ class LoginSerializer(serializers.Serializer):
     # Fields for serializer
     username = serializers.CharField(min_length = 1)
     password = serializers.CharField(min_length = 1)
-    
+    class Meta:
+        fields = ('username','password')
+
     # Function to check authentication for credentials
     def authenticator(self):
         user = authenticate(username = self.data['username'], password = self.data['password'])
