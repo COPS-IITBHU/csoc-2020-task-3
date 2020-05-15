@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Todo
+from .models import Todo,Colloborator
 
 
 """
@@ -34,7 +34,22 @@ class TodoCreateSerializer(serializers.ModelSerializer):
 
 
 class TodoDetailSerializer(serializers.ModelSerializer):
-     class Meta:
+    class Meta:
         model=Todo
         fields = ['id', 'title']
+
+#FOR ADDING COLLOBORATOR
+class ColloboratorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Colloborator
+        fields=['id','todo','owner']
+
+
+
+
+
+
+
+        
+
 

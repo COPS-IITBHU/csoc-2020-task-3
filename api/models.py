@@ -8,3 +8,15 @@ class Todo(models.Model):
 
     def __str__(self):
         return self.title
+
+        
+class Colloborator(models.Model):
+    todo=models.ForeignKey(Todo, null=True,on_delete=models.CASCADE)
+
+    owner=models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'by {self.owner.username}'
+
+
+     

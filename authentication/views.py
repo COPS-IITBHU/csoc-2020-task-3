@@ -74,9 +74,8 @@ class RegisterView(generics.GenericAPIView,mixins.RetrieveModelMixin,):
 
 
 class UserProfileView(generics.RetrieveAPIView):
-    """
-    TODO:
-    Implement the functionality to retrieve the details
-    of the logged in user.
-    """
     pass
+
+
+    
+
