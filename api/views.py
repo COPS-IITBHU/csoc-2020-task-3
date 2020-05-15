@@ -2,7 +2,7 @@ from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
-from .serializers import TodoCreateSerializer
+from .serializers import *
 from .models import Todo
 
 
@@ -14,22 +14,43 @@ Todo GET (List and Detail), PUT, PATCH and DELETE.
 
 
 class TodoCreateView(generics.GenericAPIView):
-    """
-    TODO:
-    Currently, the /todo/create/ endpoint returns only 200 status code,
-    after successful Todo creation.
-
-    Modify the below code (if required), so that this endpoint would
-    also return the serialized Todo data (id etc.), alongwith 200 status code.
-    """
     permission_classes = (permissions.IsAuthenticated, )
     serializer_class = TodoCreateSerializer
 
     def post(self, request):
-        """
-        Creates a Todo entry for the logged in user.
-        """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(status=status.HTTP_200_OK)
+        response_data={"id":Todo.objects.get(title=serializer.data['title']).id,"title":Todo.objects.get(title=serializer.data['title']).title}
+        return Response(response_data,status=status.HTTP_200_OK)
+
+class TodoView(generics.ListAPIView):
+    permission_classes=(permissions.IsAuthenticated,)
+    serializer_class=TodoSerializer
+    def get_queryset(self):
+        todolist=Todo.objects.filter(creator=self.request.user)
+        return todolist
+class SpecificTodoView(generics.RetrieveAPIView):
+    serializer_class=SpecificTodoSerializer
+    def get(self,request,id):
+        #add try catch
+        todo_object = Todo.objects.get(id=id)
+        serializer = self.get_serializer(todo_object)
+        return Response(serializer.data)
+    def put(self,request,id):
+        todo_object=Todo.objects.get(id=id)
+        todo_object.title=request.data['title']
+        todo_object.save(update_fields=['title'])
+        serializer = self.get_serializer(todo_object)
+        return Response(serializer.data)
+
+    def patch(self,request,id):
+        todo_object=Todo.objects.get(id=id)
+        todo_object.title=request.data['title']
+        todo_object.save(update_fields=['title'])
+        serializer = self.get_serializer(todo_object)
+        return Response(serializer.data)
+    def delete(self,request,id):
+        todo_object=Todo.objects.get(id=id)
+        todo_object.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT) 

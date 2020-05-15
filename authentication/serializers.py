@@ -21,7 +21,6 @@ class RegisterSerializer(serializers.Serializer):
     
 
 class UserSerializer(serializers.ModelSerializer):
-    # TODO: Implement the functionality to display user details
     name= serializers.CharField(source='get_full_name')
     class Meta:
         model=User
