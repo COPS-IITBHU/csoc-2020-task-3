@@ -20,15 +20,7 @@ class TodoCreateView(generics.GenericAPIView):
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        data=serializer.validated_data
-        user = serializer.context['request'].user
-        title = data['title']
-        colaborat_users_array=data['colaborators']
-        todo = Todo(creator=user, title=title)
-        todo.save()
-        for cuser in colaborat_users_array:
-            todo.colaborators.add("da")
-        todo.save()
+        serializer.save()
         response_data={"id":Todo.objects.get(title=serializer.data['title']).id,"title":Todo.objects.get(title=serializer.data['title']).title}
         return Response(response_data,status=status.HTTP_200_OK)
 
