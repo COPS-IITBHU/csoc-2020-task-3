@@ -2,14 +2,7 @@ from rest_framework import serializers
 from .models import Todo
 
 
-"""
-TODO:
-Create the appropriate Serializer class(es) for implementing
-Todo GET (List and Detail), PUT, PATCH and DELETE.
-"""
-
-
-class TodoListViewSerializer(serializers.ModelSerializer):
+class TodoViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
         fields = ('id', 'title')

@@ -38,12 +38,12 @@ class LoginSerializer(serializers.Serializer):
 class RegisterSerializer(serializers.Serializer):
 
     name = serializers.CharField(
-        max_length=256, min_length=1)
+        max_length=150, min_length=1)
     email = serializers.EmailField(
-        required=True, max_length=256, min_length=11)
+        required=True, max_length=255, min_length=1)
     username = serializers.CharField(
-        required=True, max_length=256, min_length=1)
-    password = serializers.CharField(max_length=256, min_length=1)
+        required=True, max_length=255, min_length=1)
+    password = serializers.CharField(max_length=255, min_length=1)
 
     def validate_email(self, email):
         if User.objects.filter(email=email):
