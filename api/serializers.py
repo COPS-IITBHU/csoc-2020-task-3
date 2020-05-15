@@ -1,5 +1,8 @@
 from rest_framework import serializers
 from .models import Todo
+from django.contrib.auth.models import User
+
+from django.shortcuts import get_object_or_404
 
 
 """
@@ -34,3 +37,29 @@ class TodoCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
         fields = ('id', 'title',)
+
+
+class TodoCollaboratorSerializer(serializers.Serializer):
+    username = serializers.CharField(required=True, max_length=250)
+
+    def add(self, id):
+        todo = get_object_or_404(Todo, id=id)
+        self.is_valid()
+        username = self.validated_data['username']
+        user = User.objects.filter(username=username)
+        if not user:
+            raise serializers.ValidationError("The user doesn't exsist.")
+        else:
+            todo.collaborator.add(user[0])
+            todo.save()
+
+    def remove(self, id):
+        todo = get_object_or_404(Todo, id=id)
+        self.is_valid()
+        username = self.validated_data['username']
+        user = User.objects.filter(username=username)
+        if not user:
+            raise serializers.ValidationError("The user doesn't exsist.")
+        else:
+            todo.collaborator.remove(user[0])
+            todo.save()

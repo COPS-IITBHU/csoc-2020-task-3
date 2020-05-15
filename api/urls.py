@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import TodoCreateView, TodoGetView, TodoDetailView
+from .views import *
 
 """
 TODO:
@@ -11,5 +11,9 @@ urlpatterns = [
     path('todo/create/', TodoCreateView.as_view()),
     path('todo/', TodoGetView.as_view()),
     path('todo/<int:id>/', TodoDetailView.as_view()),
+    path('todo/<int:id>/add-collaborators/',
+         TodoAddCollaboratorsView.as_view()),
+    path('todo/<int:id>/remove-collaborators/',
+         TodoRemoveCollaboratorsView.as_view()),
 
 ]

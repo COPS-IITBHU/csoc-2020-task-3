@@ -2,7 +2,7 @@ from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
-from .serializers import TodoCreateSerializer, TodoSerializer
+from .serializers import TodoCreateSerializer, TodoSerializer, TodoCollaboratorSerializer
 from .models import Todo
 from django.shortcuts import get_object_or_404
 
@@ -76,3 +76,23 @@ class TodoDetailView(generics.GenericAPIView):
         todo.save()
         serializer = TodoSerializer(todo)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class TodoAddCollaboratorsView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = TodoCollaboratorSerializer
+
+    def post(self, request, id):
+        serializer = self.get_serializer(data=request.data)
+        serializer.add(id)
+        return Response(status=status.HTTP_200_OK)
+
+
+class TodoRemoveCollaboratorsView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = TodoCollaboratorSerializer
+
+    def patch(self, request, id):
+        serializer = self.get_serializer(data=request.data)
+        serializer.remove(id)
+        return Response(status=status.HTTP_200_OK)
