@@ -21,7 +21,18 @@ class LoginView(generics.GenericAPIView):
     Implement login functionality, taking username and password
     as input, and returning the Token.
     """
-    pass
+    serializer_class = LoginSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            authUser = serializer.login()
+            token = create_auth_token(authUser)
+            returnTokenSerializer = TokenSerializer({'token': token})
+            return Response(returnTokenSerializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RegisterView(generics.GenericAPIView):
@@ -30,7 +41,19 @@ class RegisterView(generics.GenericAPIView):
     Implement register functionality, registering the user by
     taking his details, and returning the Token.
     """
-    pass
+    serializer_class = RegisterSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.register()
+            user = data['user']
+            token = create_auth_token(user)
+            returnTokenSerializer = TokenSerializer({'token': token})
+            return Response(returnTokenSerializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserProfileView(generics.RetrieveAPIView):
@@ -39,4 +62,9 @@ class UserProfileView(generics.RetrieveAPIView):
     Implement the functionality to retrieve the details
     of the logged in user.
     """
-    pass
+    serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)

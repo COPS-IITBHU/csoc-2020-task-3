@@ -9,6 +9,12 @@ Todo GET (List and Detail), PUT, PATCH and DELETE.
 """
 
 
+class TodoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Todo
+        fields = ('id', 'title',)
+
+
 class TodoCreateSerializer(serializers.ModelSerializer):
     """
     TODO:
@@ -18,12 +24,13 @@ class TodoCreateSerializer(serializers.ModelSerializer):
     Modify the below code (if required), so that this endpoint would
     also return the serialized Todo data (id etc.), alongwith 200 status code.
     """
+
     def save(self, **kwargs):
         data = self.validated_data
         user = self.context['request'].user
         title = data['title']
         todo = Todo.objects.create(creator=user, title=title)
-    
+
     class Meta:
         model = Todo
         fields = ('id', 'title',)
