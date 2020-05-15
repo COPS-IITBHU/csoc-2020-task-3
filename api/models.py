@@ -1,10 +1,18 @@
 from django.db import models
-from django.contrib.auth.models import User
+from authentication.models import AddonUser
 
 
 class Todo(models.Model):
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    creator = models.ForeignKey(AddonUser, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
 
     def __str__(self):
         return self.title
+
+
+class contributor(models.Model):
+    user = models.ForeignKey(AddonUser, on_delete=models.CASCADE)
+    todo = models.ForeignKey(Todo, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.user.name}-{self.todo.title}'

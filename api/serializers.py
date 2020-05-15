@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from .models import Todo
+from .models import *
+from django.contrib.auth import get_user_model
 
+UserModel = get_user_model()
 
 """
 TODO:
@@ -10,20 +12,38 @@ Todo GET (List and Detail), PUT, PATCH and DELETE.
 
 
 class TodoCreateSerializer(serializers.ModelSerializer):
-    """
-    TODO:
-    Currently, the /todo/create/ endpoint returns only 200 status code,
-    after successful Todo creation.
 
-    Modify the below code (if required), so that this endpoint would
-    also return the serialized Todo data (id etc.), alongwith 200 status code.
-    """
     def save(self, **kwargs):
         data = self.validated_data
         user = self.context['request'].user
         title = data['title']
         todo = Todo.objects.create(creator=user, title=title)
-    
+        todo.save()
+
+        data = {'id': todo.id, 'title': data['title']}
+        return data
+
     class Meta:
         model = Todo
         fields = ('id', 'title',)
+
+
+class TodoSerializer(serializers.ModelSerializer):
+    creator = serializers.CharField(
+        source='creator.username', required=False, read_only=True)
+
+    class Meta:
+        model = Todo
+        fields = ('id', 'title', 'creator')
+
+
+class TodoContri(serializers.ModelSerializer):
+    username = serializers.CharField(source="user.username")
+
+    class Meta:
+        model = contributor
+        fields = ('username', 'todo')
+        extra_kwargs = {
+            'todo': {'required': False, 'read_only': True},
+            'username': {'required': True}
+        }
