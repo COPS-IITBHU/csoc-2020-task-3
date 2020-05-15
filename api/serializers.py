@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Todo
+from .models import Todo,Collaborate
+from django.contrib.auth.models import User
  
 
 """
@@ -34,10 +35,21 @@ class TaskListSerializer(serializers.ModelSerializer):
 
     class Meta :
         model = Todo
-        fields = '__all__'   
+        fields = ('id','title')   
 
 class TaskSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Todo
         fields = ('id','title')
+
+
+class CollaborateSerializer(serializers.ModelSerializer):
+
+    
+      class Meta :
+
+        model = Collaborate
+        fields = '__all__'
+      
+      

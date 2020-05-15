@@ -47,7 +47,7 @@ class LoginView(generics.GenericAPIView):
 
 class RegisterView(generics.GenericAPIView):
 
-    """
+    """ 
     TODO:
     Implement register functionality, registering the user by
     taking his details, and returning the Token.
@@ -63,9 +63,9 @@ class RegisterView(generics.GenericAPIView):
            token = create_auth_token(user)
            token = {'token' : token }
            serializer = TokenSerializer(token)
-           return Response(serializer.data,status=status.HTTP_201_CREATED)
+           return Response(serializer.data,status=status.HTTP_201_CREATED)     
         else :
-           return Response(status = status.HTTP_400_BAD_REQUEST)    
+           return Response(serializer.errors,status = status.HTTP_400_BAD_REQUEST)    
                                                                 
 
 class UserProfileView(generics.RetrieveAPIView):

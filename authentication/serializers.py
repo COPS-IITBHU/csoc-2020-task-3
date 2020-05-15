@@ -23,7 +23,7 @@ class LoginSerializer(serializers.Serializer):
 
 class RegisterSerializer(serializers.Serializer):
     # TODO: Implement register functionality
-    
+     
       name = serializers.CharField(min_length = 1)
       username = serializers.CharField(min_length=1)
       email = serializers.EmailField(max_length = 200)
@@ -45,10 +45,8 @@ class RegisterSerializer(serializers.Serializer):
 
 class UserSerializer(serializers.ModelSerializer):
     # TODO: Implement the functionality to display user details
-      
-    
-
-    class Meta :
+       
+      class Meta :
            model = User
            fields = ('id','first_name','email','username')
         
