@@ -13,3 +13,6 @@ class Todo(models.Model):
 class contributor(models.Model):
     user = models.ForeignKey(AddonUser, on_delete=models.CASCADE)
     todo = models.ForeignKey(Todo, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.user.name}-{self.todo.title}'

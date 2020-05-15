@@ -29,9 +29,12 @@ class TodoCreateSerializer(serializers.ModelSerializer):
 
 
 class TodoSerializer(serializers.ModelSerializer):
+    creator = serializers.CharField(
+        source='creator.username', required=False, read_only=True)
+
     class Meta:
         model = Todo
-        fields = ('id', 'title',)
+        fields = ('id', 'title', 'creator')
 
 
 class TodoContri(serializers.ModelSerializer):
@@ -41,5 +44,6 @@ class TodoContri(serializers.ModelSerializer):
         model = contributor
         fields = ('username', 'todo')
         extra_kwargs = {
-            'todo': {'required': False, 'read_only': True}
+            'todo': {'required': False, 'read_only': True},
+            'username': {'required': True}
         }

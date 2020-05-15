@@ -38,11 +38,16 @@ class TodoDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TodoSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
+    def get_object(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return None
+        return super().get_object()
+
     def get_queryset(self):
         user = self.request.user
-        OwnTodo = Todo.objects.filter(creator=user)
+        OwnTodo = Todo.objects.filter(creator=user.id)
         ContriTodo = contributor.objects.filter(
-            user=user).values('todo')
+            user=user.id).values('todo')
         OthersTodo = Todo.objects.filter(pk__in=ContriTodo)
         return OwnTodo | OthersTodo
 
@@ -63,10 +68,10 @@ class TodoListView(generics.ListAPIView):
 class TodoCollab(generics.GenericAPIView):
     serializer_class = TodoContri
     permission_classes = (permissions.IsAuthenticated,)
+    queryset = contributor
 
     def post(self, request, pk):
         todo = get_object_or_404(Todo, pk=pk, creator=request.user)
-
         request.data['todo'] = todo.pk
 
         serializer = self.get_serializer(data=request.data)
@@ -82,6 +87,7 @@ class TodoCollab(generics.GenericAPIView):
 class TodoUnCollab(generics.GenericAPIView):
     serializer_class = TodoContri
     permission_classes = (permissions.IsAuthenticated,)
+    queryset = contributor
 
     def delete(self, request, pk):
         todo = get_object_or_404(Todo, pk=pk, creator=request.user)
