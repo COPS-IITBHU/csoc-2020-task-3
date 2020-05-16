@@ -8,6 +8,8 @@ TODO:
 Create the appropriate Serializer class(es) for implementing
 Todo GET (List and Detail), PUT, PATCH and DELETE.
 """
+class CollaboratorsSerializer(serializers.Serializer):
+    pass
 class ColabSerializer(serializers.Serializer):
     username=serializers.CharField(max_length=100)
 
@@ -17,10 +19,10 @@ class TodoCreateSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         title = data['title']
         colaborat_users_array=data['colaborators']
-        print(colaborat_users_array)
         todo = Todo(creator=user, title=title)
+        todo.save()
         for cuser in colaborat_users_array:
-            todo.colaborators.add(User.objects.get(username=cuser.username))
+            todo.colaborators.add(User.objects.get(username=cuser['username']))
         todo.save()
         
 
@@ -29,11 +31,13 @@ class TodoCreateSerializer(serializers.ModelSerializer):
         model = Todo
         fields = ('id', 'title','colaborators')
 class TodoSerializer(serializers.ModelSerializer):
+    colaborators = ColabSerializer(many=True,required=False) 
     class Meta:
         model=Todo
-        fields = ('id','title')
+        fields = ('id','title','colaborators')
 
 class SpecificTodoSerializer(serializers.ModelSerializer):
+    colaborators = ColabSerializer(many=True,required=False) 
     class Meta:
         model=Todo
-        fields = ('id','title')
+        fields = ('id','title','colaborators')

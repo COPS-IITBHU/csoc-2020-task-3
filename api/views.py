@@ -21,8 +21,7 @@ class TodoCreateView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        response_data={"id":Todo.objects.get(title=serializer.data['title']).id,"title":Todo.objects.get(title=serializer.data['title']).title}
-        return Response(response_data,status=status.HTTP_200_OK)
+        return Response(serializer.data,status=status.HTTP_200_OK)
 
 class TodoView(generics.ListAPIView):
     permission_classes=(permissions.IsAuthenticated,)
@@ -53,4 +52,24 @@ class SpecificTodoView(generics.RetrieveAPIView):
     def delete(self,request,id):
         todo_object=Todo.objects.get(id=id)
         todo_object.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT) 
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class collaboratorsView(generics.GenericAPIView):
+    permission_classes=(permissions.IsAuthenticated,)
+    serializer_class=ColabSerializer
+    def post(self,request,id):
+        serializer = self.get_serializer(request.data)
+        todo=Todo.objects.get(id=id)
+        if todo.creator==request.user:
+            todo.colaborators.add(User.objects.get(username=serializer.data['username']))
+            return Response({"details":"Coloborator added"})
+        else:
+            return Response({"Error":"You are not The owner Of This Todo"})
+    def patch(self,request,id):
+        serializer = self.get_serializer(request.data)
+        todo=Todo.objects.get(id=id)
+        if todo.creator==request.user:
+            todo.colaborators.remove(User.objects.get(username=serializer.data['username']))
+            return Response({"details":"Coloborator Removed"})
+        else:
+            return Response({"Error":"You are not The owner Of This Todo"}) 
