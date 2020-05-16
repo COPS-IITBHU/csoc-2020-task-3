@@ -9,6 +9,7 @@ from .serializers import (
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework.renderers import JSONRenderer
+from rest_framework.permissions import IsAuthenticated
 
 
 def create_auth_token(user):
@@ -46,10 +47,12 @@ class RegisterView(generics.GenericAPIView):
 
 
 class UserProfileView(generics.RetrieveAPIView):
+    permission_classes = (IsAuthenticated,) 
     def get(self,request):
         try:
             token=request.headers['Authorization']
-            userToken = Token.objects.get(key=token)
+            print(token)
+            userToken = Token.objects.get(key=token.split()[1])
             userdata=User.objects.get(username=userToken.user)
             serialiser = UserSerializer(userdata)
             return JsonResponse(serialiser.data)
