@@ -49,13 +49,28 @@ class TodoListView(APIView):
           todos1 = Todo.objects.filter(creator = request.user.id)
           todos2 = Collaborate.objects.filter(user=request.user.id)
           todos3 = []
+          todos4 = []
+          todos5 = []
+          allobj = Collaborate.objects.all()
+
+          for i in allobj :
+            if(i.title.creator==request.user):
+              todos4.append(i) 
+             
+
           for i in todos2 :
             todos3 += Todo.objects.filter(id=i.title_id)
+          for i in todos4 :
+            todos5 += Todo.objects.filter(id=i.title_id)  
+          
           serializer1 = TaskListSerializer(todos1,many=True)
           serializer2 = TaskListSerializer(todos3,many=True)
+          serializer3 = TaskListSerializer(todos5,many=True)
+  
           return Response({
              "Created  Todo's:": serializer1.data,
-             "Collaborated Todo's" : serializer2.data
+             "Collaborated Todo's" : serializer2.data,
+             "Created and Collaborated" : serializer3.data,
               },status=status.HTTP_200_OK)    
 
 
@@ -70,7 +85,7 @@ class TodoDetailView(generics.RetrieveUpdateDestroyAPIView):
         except :
             raise Http404
 
-
+  
 
     def get(self,request,id,formate=None):
 

@@ -57,6 +57,11 @@ class RegisterView(generics.GenericAPIView):
 
     def post(self,request):
 
+        if (User.objects.filter(username=request.data['username']).exists()):
+           return Response({"Error" : "username Already Taken ! "},status=status.HTTP_400_BAD_REQUEST)
+        if (User.objects.filter(email=request.data['email']).exists()):
+           return Response({"Error" : "Email Already Exists ! "},status=status.HTTP_400_BAD_REQUEST)
+                    
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
            user =  serializer.create()

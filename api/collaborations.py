@@ -12,18 +12,31 @@ class AddCollaboration(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
     
     def post(self,request,id,user,formate=None):
-            print(id)
+         
+            
+            name = user 
             user = User.objects.get(username=user).pk
             data = {'user' : user , 'title' : id }
             serializer = CollaborateSerializer(data=data)
             creator = Todo.objects.get(pk=id).creator
+            title = Todo.objects.get(pk=id).title
+
+            if(request.user.username == name):
+              return Response({"info":"Please Collaborate With Other Users"},status=status.HTTP_400_BAD_REQUEST)
+      
             if request.user != creator :
                raise PermissionDenied("Access Denied")
             else : 
-               if  serializer.is_valid() : 
-                 serializer.save()
-                 return Response({"collaboration Created ! "},status=status.HTTP_201_CREATED)
-               else :
+                if  serializer.is_valid() :
+                  if(Collaborate.objects.filter(title_id=id,user=user).exists()):
+                   return Response({"Collaboration Alredy Exists ! "},status=status.HTTP_400_BAD_REQUEST) 
+                  else:  
+                   serializer.save()
+                   return Response({"collaboration Created ! " : {
+                     "with_user " : name ,
+                     "for_todo" : title, 
+                   }},status=status.HTTP_201_CREATED)
+                else :
                  return Response(serializer.errors)
 
 class RemoveCollaboration(generics.DestroyAPIView):
@@ -41,7 +54,7 @@ class RemoveCollaboration(generics.DestroyAPIView):
               task.delete()
               return Response({"Collaboration Removed !"},status= status.HTTP_200_OK)
          else :
-            return Response({"detail" : "Not Found !"},status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error" : " detail Not Found !"},status=status.HTTP_400_BAD_REQUEST)
 
 
                 
