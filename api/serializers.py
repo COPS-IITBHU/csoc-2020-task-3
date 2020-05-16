@@ -8,6 +8,19 @@ Create the appropriate Serializer class(es) for implementing
 Todo GET (List and Detail), PUT, PATCH and DELETE.
 """
 
+class TodoCollaboratorsSerializer(serializers.Serializer):
+    usernames = serializers.CharField()
+
+class TodoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Todo
+        fields = ('id', 'title')
+
+class TodoListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Todo
+        fields = ('id', 'title')
+    
 
 class TodoCreateSerializer(serializers.ModelSerializer):
     """
@@ -23,6 +36,10 @@ class TodoCreateSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         title = data['title']
         todo = Todo.objects.create(creator=user, title=title)
+        return {
+            "id": todo.id,
+            "title": todo.title
+        }
     
     class Meta:
         model = Todo
