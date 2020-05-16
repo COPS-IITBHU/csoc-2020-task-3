@@ -42,6 +42,8 @@ class SpecificTodoSerializer(serializers.ModelSerializer):
     class Meta:
         model=Todo
         fields = ('id','title','colaborators')
+        extra_kwargs = {'id': {'read_only': False}}
+
 class TodoCollaborativeGet(serializers.ModelSerializer):
     collaborations=TodoSerializer(many=True)
     created=TodoSerializer(many=True)

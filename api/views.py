@@ -21,7 +21,9 @@ class TodoCreateView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data,status=status.HTTP_200_OK)
+        todo=Todo.objects.get(title=serializer.data['title'])
+        ser=self.get_serializer(todo)
+        return Response(ser.data,status=status.HTTP_200_OK)
 
 class TodoView(generics.GenericAPIView):
     permission_classes=(permissions.IsAuthenticated,)
