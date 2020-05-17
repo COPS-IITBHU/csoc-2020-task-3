@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import TodoCreateView
+from . import views
 
 """
 TODO:
@@ -8,5 +8,9 @@ Todo GET (List and Detail), PUT, PATCH and DELETE.
 """
 
 urlpatterns = [
-    path('todo/create/', TodoCreateView.as_view()),
+    path('todo/create/', views.TodoCreateView.as_view()),
+    path('todo/', views.ListTodo.as_view()),
+    path('todo/<int:id>/', views.DetailTodo.as_view()),
+    path('todo/<int:id>/add-collaborators/',views.TodoAddCollaborator.as_view()),
+    path('todo/<int:id>/remove-collaborators/',views.TodoRemoveCollaborator.as_view()),
 ]
