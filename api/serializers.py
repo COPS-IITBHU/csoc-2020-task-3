@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import Todo
+from django.contrib.auth.models import User
+
 
 
 """
@@ -7,9 +9,12 @@ TODO:
 Create the appropriate Serializer class(es) for implementing
 Todo GET (List and Detail), PUT, PATCH and DELETE.
 """
+class CollaboratorSerializer(serializers.Serializer):
+    username = serializers.CharField(required=True)
+    
 
 
-class TodoCreateSerializer(serializers.ModelSerializer):
+class TodoSerializer(serializers.ModelSerializer):
     """
     TODO:
     Currently, the /todo/create/ endpoint returns only 200 status code,
@@ -23,6 +28,9 @@ class TodoCreateSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         title = data['title']
         todo = Todo.objects.create(creator=user, title=title)
+
+    def create(self,validated_data):
+        return Todo.objects.create(validated_data)    
     
     class Meta:
         model = Todo

@@ -1,3 +1,6 @@
+from django.contrib.auth import authenticate,login
+from django.contrib.auth.models import User
+
 from rest_framework import permissions
 from rest_framework import generics
 from rest_framework import status
@@ -21,7 +24,32 @@ class LoginView(generics.GenericAPIView):
     Implement login functionality, taking username and password
     as input, and returning the Token.
     """
-    pass
+    serializer_class = LoginSerializer
+    
+
+    def post(self,request):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user_name = request.data['username']
+            password = request.data['password']
+            user = authenticate(username=user_name,password=password)
+            if user:
+                # login(request,user)
+                response = {"token":str(create_auth_token(user))}
+                
+                return Response(response,status=status.HTTP_200_OK)
+            
+            response = {
+                "Error":"Invalid Credentials"
+            }
+            return Response(response,status=status.HTTP_401_UNAUTHORIZED)
+        # else:
+        #     response = {
+        #         "Error":"Please enter valid data"
+        #     }
+        #     return Response(response,status=status.HTTP_400_BAD_REQUEST)
+
+    
 
 
 class RegisterView(generics.GenericAPIView):
@@ -30,7 +58,26 @@ class RegisterView(generics.GenericAPIView):
     Implement register functionality, registering the user by
     taking his details, and returning the Token.
     """
-    pass
+    serializer_class = RegisterSerializer
+    
+
+    def post(self,request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            # user_name = request.data['username']
+            # password = request.data['password']
+            # user = authenticate(username=user_name,password=password)
+            user = User.objects.get(username = request.data['username'])
+            # login(request,user)
+            response = {"token":str(create_auth_token(user))}
+                
+            return Response(response,status=status.HTTP_200_OK)
+        else:
+            response = {
+                "Error":"Please enter valid data"
+            }
+            return Response(response,status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserProfileView(generics.RetrieveAPIView):
@@ -39,4 +86,9 @@ class UserProfileView(generics.RetrieveAPIView):
     Implement the functionality to retrieve the details
     of the logged in user.
     """
-    pass
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = UserSerializer
+    def get(self,request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+    
