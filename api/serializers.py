@@ -8,8 +8,6 @@ TODO:
 Create the appropriate Serializer class(es) for implementing
 Todo GET (List and Detail), PUT, PATCH and DELETE.
 """
-class CollaboratorsSerializer(serializers.Serializer):
-    pass
 class ColabSerializer(serializers.Serializer):
     username=serializers.CharField(max_length=100)
 

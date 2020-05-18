@@ -11,13 +11,10 @@ class LoginSerializer(serializers.Serializer):
     username=serializers.CharField(max_length=100)
     password=serializers.CharField(max_length=100)
 
-class RegisterSerializer(serializers.Serializer):
-    username=serializers.CharField(max_length=100)
-    password=serializers.CharField(max_length=100)
-    email=serializers.CharField(max_length=100)
-    first_name=serializers.CharField(max_length=100)
-    last_name=serializers.CharField(max_length=100)
-    password=serializers.CharField(max_length=100)
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=User
+        fields=('username','password','email','first_name','last_name')
     
 
 class UserSerializer(serializers.ModelSerializer):
