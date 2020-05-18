@@ -28,6 +28,10 @@ class TodoCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
         fields = ('id', 'title','colaborators')
+class PutPatchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Todo
+        fields=('id','title',)
 class TodoSerializer(serializers.ModelSerializer):
     colaborators = ColabSerializer(many=True,required=False) 
     class Meta:
