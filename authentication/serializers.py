@@ -53,4 +53,4 @@ class UserSerializer(serializers.ModelSerializer):
     # TODO: Implement the functionality to display user details
     class Meta:
         model = User
-        fields = ('id', 'name', 'email', 'username')
+        fields = ('id', 'first_name', 'email', 'username')
