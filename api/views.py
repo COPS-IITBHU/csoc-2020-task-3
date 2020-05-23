@@ -53,7 +53,7 @@ class TodoDetailView(generics.GenericAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     def put(self,request,id):
         query = Todo.objects.get(id=id,collaborator=request.user)
-        serializers=ArticleSerializer(query,data=request.data)
+        serializers=TodoSerializer(query,data=request.data)
 
         if serializers.is_valid():
             serializers.save()
@@ -61,7 +61,7 @@ class TodoDetailView(generics.GenericAPIView):
         return Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
     def patch(self,request,id):
         query = Todo.objects.get(id=id,collaborator=request.user)
-        serializers=ArticleSerializer(query,data=request.data)
+        serializers=TodoSerializer(query,data=request.data)
 
         if serializers.is_valid():
             serializers.save()
@@ -76,7 +76,10 @@ class TodoAddCollaborator(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated, )
     serializer_class = TodoSerializer
     def post(self,request,id):
-        query = Todo.objects.get(id=id,creator=request.user)
+        try:
+            query = Todo.objects.get(id=id,creator=request.user)
+        except:
+            return Response({"message":"You are not creator"},status=status.HTTP_204_NO_CONTENT)
         user=User.objects.get(username=request.data['username'])
         query.collaborator.add(user)
         return Response(status=status.HTTP_200_OK)
@@ -85,7 +88,10 @@ class TodoRemoveCollaborator(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated, )
     serializer_class = TodoSerializer
     def post(self,request,id):
-        query = Todo.objects.get(id=id,creator=request.user)
+        try:
+            query = Todo.objects.get(id=id,creator=request.user)
+        except:
+            return Response({"message":"You are not creator of this collaborator"},status=status.HTTP_204_NO_CONTENT)
         user=User.objects.get(username=request.data['username'])
-        query.collaborator.remove(user)
+        query.collaborator.remove(user)            
         return Response(status=status.HTTP_200_OK)

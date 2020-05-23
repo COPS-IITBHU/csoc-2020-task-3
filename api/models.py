@@ -9,10 +9,3 @@ class Todo(models.Model):
 
     def __str__(self):
         return self.title
-
-class Collaborators(models.Model):
-    todo=models.ForeignKey(Todo,on_delete=models.CASCADE)
-    collaborator=models.ForeignKey(User,on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.collaborator

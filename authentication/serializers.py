@@ -18,7 +18,7 @@ class LoginSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     # TODO: Implement register functionality
-    name=serializers.CharField(source='get_full_name')
+    name=serializers.CharField(source='first_name')
     #lastname=serializers.CharField(required=True)
     email=serializers.EmailField()
     class Meta:
@@ -38,7 +38,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     # TODO: Implement the functionality to display user details
-    name=serializers.CharField(source='get_full_name',required=False)
+    name=serializers.CharField(source='first_name',required=False)
     class Meta:
         model=User
         fields=['id','name','email','username']
