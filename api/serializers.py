@@ -1,29 +1,43 @@
 from rest_framework import serializers
-from .models import Todo
-
-
-"""
-TODO:
-Create the appropriate Serializer class(es) for implementing
-Todo GET (List and Detail), PUT, PATCH and DELETE.
-"""
-
+from . models import Todo
 
 class TodoCreateSerializer(serializers.ModelSerializer):
-    """
-    TODO:
-    Currently, the /todo/create/ endpoint returns only 200 status code,
-    after successful Todo creation.
-
-    Modify the below code (if required), so that this endpoint would
-    also return the serialized Todo data (id etc.), alongwith 200 status code.
-    """
     def save(self, **kwargs):
         data = self.validated_data
         user = self.context['request'].user
         title = data['title']
         todo = Todo.objects.create(creator=user, title=title)
-    
+        return {
+            'id':todo.id,
+            'title':todo.title
+        }
+
     class Meta:
         model = Todo
         fields = ('id', 'title',)
+
+class TodoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Todo
+        fields=('id','title')
+
+class CollaboratorSerializer(serializers.Serializer):
+    username=serializers.CharField()
+
+    def add(self, id):
+        todo=Todo.objects.get(id=id)
+        username=self.validated_data['username']
+        user=User.objects.filter(username=username)
+        todo.collaborator.add(user[0])
+        todo.save()
+
+    def remove(self, id):
+        todo=Todo.objects.get(id=id)
+        username=self.validated_data['username']
+        user=User.objects.filter(username=username)
+        todo.collaborater.remove(user[0])
+        todo.save()
+
+    class Meta:
+        model=Todo
+        fields=('id', 'username')        
