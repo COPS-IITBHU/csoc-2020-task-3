@@ -23,7 +23,14 @@ class TodoCreateSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         title = data['title']
         todo = Todo.objects.create(creator=user, title=title)
+        todo.collaborator.add(user)
+
     
+    class Meta:
+        model = Todo
+        fields = ('id', 'title',)
+
+class TodoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
         fields = ('id', 'title',)

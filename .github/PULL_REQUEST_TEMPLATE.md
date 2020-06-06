@@ -2,5 +2,5 @@
 
 I have completed the following tasks
 
-- [ ] Basic endpoints
-- [ ] Collaborator feature
+- [x] Basic endpoints
+- [x] Collaborator feature
