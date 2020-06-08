@@ -12,6 +12,7 @@ django-cors-headers = "*"
 django-heroku = "*"
 gunicorn = "*"
 drf-yasg = "*"
+jsonfield = "*"
 
 [requires]
 python_version = "3.8"
