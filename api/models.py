@@ -7,4 +7,14 @@ class Todo(models.Model):
     title = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.title
+        return self.title  
+
+
+class Collaborate(models.Model):
+
+    user = models.ForeignKey(User,related_name="collaborator",on_delete=models.CASCADE)
+    title = models.ForeignKey(Todo,related_name="task",on_delete=models.CASCADE)
+
+    
+
+
