@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model # If used custom user model
+
+UserModel = get_user_model()
 
 
 class TokenSerializer(serializers.Serializer):
@@ -9,15 +12,21 @@ class TokenSerializer(serializers.Serializer):
 
 class LoginSerializer(serializers.Serializer):
     # TODO: Implement login functionality
-    pass
+   class Meta:
+       model = UserModel
+       fields=('id','username','password',)
 
 
 class RegisterSerializer(serializers.Serializer):
-    # TODO: Implement register functionality
-    pass
+    password = serializers.CharField(write_only=True)
+    class Meta:
+        model = UserModel
+        # Tuple of serialized model fields (see link [2])
+        fields = ( "id", "username", "password", )
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # TODO: Implement the functionality to display user details
-    pass
+    class Meta:
+        model=UserModel
+        fields={"id","name","email","username"}
     

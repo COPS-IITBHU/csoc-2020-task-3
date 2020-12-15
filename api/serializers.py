@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Todo
+from .models import Todo,Colloborator
 
 
 """
@@ -7,7 +7,11 @@ TODO:
 Create the appropriate Serializer class(es) for implementing
 Todo GET (List and Detail), PUT, PATCH and DELETE.
 """
-
+class TodoListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Todo
+        fields = ['id', 'title']
+    
 
 class TodoCreateSerializer(serializers.ModelSerializer):
     """
@@ -27,3 +31,25 @@ class TodoCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
         fields = ('id', 'title',)
+
+
+class TodoDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Todo
+        fields = ['id', 'title']
+
+#FOR ADDING COLLOBORATOR
+class ColloboratorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Colloborator
+        fields=['id','todo','owner']
+
+
+
+
+
+
+
+        
+
+
